@@ -58,6 +58,24 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    href: "/chat",
+    label: "Chat Warga",
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    ),
+  },
+  {
+    href: "/user-logs",
+    label: "Log Aktivitas",
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
 ];
 
 export default function Sidebar() {
@@ -79,42 +97,45 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`flex flex-col h-screen bg-[#141417] border-r border-[#27272a] transition-all duration-300 ${collapsed ? "w-16" : "w-64"}`}
+      className={`flex flex-col h-screen bg-[#141417] border-r border-[#27272a] transition-all duration-300 ${collapsed ? "w-16" : "w-64"} shrink-0 relative`}
     >
+      {/* Toggle Button Container (Absolute for easy click when collapsed) */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="absolute -right-3 top-6 bg-[#27272a] hover:bg-indigo-600 text-white rounded-full p-1 z-50 border border-[#141417] transition-colors"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={collapsed ? "M9 5l7 7-7 7" : "M15 19l-7-7 7-7"} />
+        </svg>
+      </button>
+
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-[#27272a]">
+      <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-4 py-5 border-b border-[#27272a] h-[73px]`}>
         <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/30">
           <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
           </svg>
         </div>
-        {!collapsed && <span className="text-white font-bold text-lg tracking-tight">SIMPEL</span>}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="ml-auto text-slate-500 hover:text-white transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={collapsed ? "M13 5l7 7-7 7" : "M11 19l-7-7 7-7"} />
-          </svg>
-        </button>
+        {!collapsed && <span className="text-white font-bold text-lg tracking-tight truncate">SIMPEL</span>}
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => {
           const active = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group ${
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-3'} py-2.5 rounded-lg transition-all duration-150 group ${
                 active
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
                   : "text-slate-400 hover:bg-[#1e1e24] hover:text-white"
               }`}
+              title={collapsed ? item.label : undefined}
             >
               <span className="shrink-0">{item.icon}</span>
-              {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
+              {!collapsed && <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>}
             </Link>
           );
         })}
@@ -123,7 +144,7 @@ export default function Sidebar() {
       {/* User */}
       <div className="px-3 py-4 border-t border-[#27272a]">
         {!collapsed && user && (
-          <div className="px-3 py-2 mb-2">
+          <div className="px-3 py-2 mb-2 overflow-hidden">
             <p className="text-xs text-slate-500">Masuk sebagai</p>
             <p className="text-sm font-medium text-white truncate">{user.name}</p>
             <p className="text-xs text-slate-500 truncate">{user.email}</p>
@@ -131,7 +152,8 @@ export default function Sidebar() {
         )}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all"
+          className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-3'} w-full py-2.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all`}
+          title={collapsed ? "Keluar" : undefined}
         >
           <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

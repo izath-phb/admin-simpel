@@ -9,6 +9,7 @@ const STATUS_LABELS: Record<string, { label: string; class: string }> = {
   pending: { label: "Menunggu", class: "bg-amber-500/15 text-amber-400 border-amber-500/30" },
   on_progress: { label: "Diproses", class: "bg-indigo-500/15 text-indigo-400 border-indigo-500/30" },
   resolved: { label: "Selesai", class: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
+  rejected: { label: "Ditolak", class: "bg-red-500/15 text-red-400 border-red-500/30" },
 };
 
 const MOCK_REPORTS: Report[] = [
@@ -138,7 +139,7 @@ export default function ReportsPage() {
           <svg className="w-4 h-4 text-slate-600 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
         </div>
         <div className="flex gap-2">
-          {["all", "pending", "on_progress", "resolved"].map((s) => (
+          {["all", "pending", "on_progress", "resolved", "rejected"].map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
@@ -276,6 +277,7 @@ export default function ReportsPage() {
                         <option value="pending">Menunggu</option>
                         <option value="on_progress">Sedang Diproses</option>
                         <option value="resolved">Selesai</option>
+                        <option value="rejected">Ditolak (Spam / Tidak Valid)</option>
                       </select>
                       
                       {updateStatus === 'resolved' && (
@@ -333,15 +335,37 @@ export default function ReportsPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-[#27272a] flex gap-3 justify-end shrink-0 bg-[#1c1c21]/50">
-              <button onClick={() => setSelectedReport(null)} className="px-5 py-2.5 text-slate-400 hover:text-white text-sm font-medium transition-colors">Batal</button>
+            <div className="px-6 py-4 border-t border-[#27272a] flex flex-col sm:flex-row gap-3 justify-between shrink-0 bg-[#1c1c21]/50">
               <button
-                onClick={handleUpdate}
+                onClick={async () => {
+                  if (confirm("Yakin ingin menghapus laporan ini? Laporan yang dihapus tidak dapat dikembalikan.")) {
+                    setUpdating(true);
+                    try {
+                      await api.delete(`/reports/${selectedReport.id}`);
+                      fetchReports();
+                      setSelectedReport(null);
+                    } catch {
+                      alert("Gagal menghapus laporan.");
+                    } finally {
+                      setUpdating(false);
+                    }
+                  }
+                }}
                 disabled={updating}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-600/20"
+                className="px-5 py-2.5 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-xl text-sm font-medium transition-colors border border-red-500/20"
               >
-                {updating ? "Memproses..." : "Update Laporan"}
+                Hapus Laporan
               </button>
+              <div className="flex gap-3 justify-end">
+                <button onClick={() => setSelectedReport(null)} className="px-5 py-2.5 text-slate-400 hover:text-white text-sm font-medium transition-colors">Batal</button>
+                <button
+                  onClick={handleUpdate}
+                  disabled={updating}
+                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-600/20"
+                >
+                  {updating ? "Memproses..." : "Update Laporan"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

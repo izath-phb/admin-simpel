@@ -218,7 +218,7 @@ export default function DashboardPage() {
                   <p className="text-white font-medium">{log.admin} <span className="text-slate-500 font-normal">melakukan</span> {log.action.replace(/_/g, ' ')}</p>
                   <p className="text-slate-500 mt-0.5">{log.target}</p>
                 </div>
-                <span className="text-slate-600 italic">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                <span className="text-slate-600 italic" suppressHydrationWarning>{new Date(log.timestamp).toLocaleTimeString()}</span>
               </div>
             ))}
           </div>
@@ -243,7 +243,7 @@ export default function DashboardPage() {
                 <div className="p-4 flex-1 flex flex-col">
                   <h3 className="text-sm font-bold text-white line-clamp-1">{announcement.title}</h3>
                   <p className="text-xs text-slate-400 mt-1 line-clamp-2">{announcement.content}</p>
-                  <p className="text-[10px] text-slate-500 mt-auto pt-3">{new Date(announcement.created_at).toLocaleDateString("id-ID")}</p>
+                  <p className="text-[10px] text-slate-500 mt-auto pt-3" suppressHydrationWarning>{new Date(announcement.created_at).toLocaleDateString("id-ID")}</p>
                 </div>
               </div>
             ))}
