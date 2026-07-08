@@ -13,9 +13,9 @@ interface BigDataStats {
     total_external: number;
     total_combined: number;
   };
-  bar_chart: { name: string; value: number }[];
-  pie_chart: { name: string; value: number; color: string }[];
-  line_chart: { time: string; volume: number; bmkg?: number; news?: number; weather?: number }[];
+  internal_bar_chart: { name: string; value: number }[];
+  external_pie_chart: { name: string; value: number; color: string }[];
+  line_chart: { time: string; volume: number; bmkg?: number; news?: number; weather?: number; users?: number; reports?: number }[];
 }
 
 export default function BigDataPage() {
@@ -27,6 +27,8 @@ export default function BigDataPage() {
   const [showBMKG, setShowBMKG] = useState(true);
   const [showNews, setShowNews] = useState(true);
   const [showWeather, setShowWeather] = useState(true);
+  const [showUsers, setShowUsers] = useState(true);
+  const [showReports, setShowReports] = useState(true);
 
   // Raw Data Search States
   const [rawSource, setRawSource] = useState("news");
@@ -108,14 +110,58 @@ export default function BigDataPage() {
         </div>
       </div>
 
-      {/* Charts */}
+      {/* 4 Charts: 2 Internal, 2 External */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Line Chart Detail */}
-        <div className="glass rounded-2xl p-6 lg:col-span-2">
+        
+        {/* INTERNAL: Line Chart */}
+        <div className="glass rounded-2xl p-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <h2 className="text-base font-semibold text-white">Tren Data Eksternal ({timeRange === '24h' ? 'Per Jam' : 'Per Hari'})</h2>
+            <h2 className="text-base font-semibold text-white">Tren Data Internal</h2>
             
-            {/* Checkbox Filters */}
+            <div className="flex items-center gap-4 text-sm bg-slate-800/40 py-1.5 px-3 rounded-lg border border-slate-700/50">
+              <Filter className="w-3.5 h-3.5 text-slate-400" />
+              <label className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                <input type="checkbox" checked={showUsers} onChange={(e) => setShowUsers(e.target.checked)} className="accent-indigo-500" />
+                <span className="text-indigo-400 font-medium">Users</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                <input type="checkbox" checked={showReports} onChange={(e) => setShowReports(e.target.checked)} className="accent-purple-500" />
+                <span className="text-purple-400 font-medium">Reports</span>
+              </label>
+            </div>
+          </div>
+
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={stats.line_chart}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+              <XAxis dataKey="time" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "#141417", border: "1px solid #27272a", borderRadius: 8 }} itemStyle={{ color: "#f8fafc" }} />
+              {showUsers && <Line type="monotone" dataKey="users" name="Users" stroke="#818cf8" strokeWidth={3} dot={{ r: 3, fill: "#818cf8", strokeWidth: 0 }} activeDot={{ r: 6 }} />}
+              {showReports && <Line type="monotone" dataKey="reports" name="Reports" stroke="#c084fc" strokeWidth={3} dot={{ r: 3, fill: "#c084fc", strokeWidth: 0 }} activeDot={{ r: 6 }} />}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* INTERNAL: Bar Chart */}
+        <div className="glass rounded-2xl p-6">
+          <h2 className="text-base font-semibold text-white mb-4">Sebaran Data Internal</h2>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={stats.internal_bar_chart} barSize={32}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+              <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "#141417", border: "1px solid #27272a", borderRadius: 8 }} cursor={{ fill: '#27272a' }} />
+              <Bar dataKey="value" fill="#6366f1" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* EXTERNAL: Line Chart */}
+        <div className="glass rounded-2xl p-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <h2 className="text-base font-semibold text-white">Tren Data Eksternal</h2>
+            
             <div className="flex items-center gap-4 text-sm bg-slate-800/40 py-1.5 px-3 rounded-lg border border-slate-700/50">
               <Filter className="w-3.5 h-3.5 text-slate-400" />
               <label className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
@@ -133,15 +179,12 @@ export default function BigDataPage() {
             </div>
           </div>
 
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={220}>
             <LineChart data={stats.line_chart}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
               <XAxis dataKey="time" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={{ background: "#141417", border: "1px solid #27272a", borderRadius: 8, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5)" }}
-                itemStyle={{ color: "#f8fafc" }}
-              />
+              <Tooltip contentStyle={{ background: "#141417", border: "1px solid #27272a", borderRadius: 8 }} itemStyle={{ color: "#f8fafc" }} />
               {showBMKG && <Line type="monotone" dataKey="bmkg" name="Data BMKG" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3, fill: "#f59e0b", strokeWidth: 0 }} activeDot={{ r: 6 }} />}
               {showNews && <Line type="monotone" dataKey="news" name="Data Berita" stroke="#ec4899" strokeWidth={3} dot={{ r: 3, fill: "#ec4899", strokeWidth: 0 }} activeDot={{ r: 6 }} />}
               {showWeather && <Line type="monotone" dataKey="weather" name="Data Cuaca" stroke="#06b6d4" strokeWidth={3} dot={{ r: 3, fill: "#06b6d4", strokeWidth: 0 }} activeDot={{ r: 6 }} />}
@@ -149,14 +192,14 @@ export default function BigDataPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Pie & Bar Charts */}
+        {/* EXTERNAL: Pie Chart */}
         <div className="glass rounded-2xl p-6 flex flex-col">
-          <h2 className="text-base font-semibold text-white mb-4">Proporsi Sumber Data</h2>
+          <h2 className="text-base font-semibold text-white mb-4">Sebaran Data Eksternal</h2>
           <div className="flex-1 min-h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={stats.pie_chart} cx="50%" cy="50%" innerRadius={60} outerRadius={85} paddingAngle={5} dataKey="value">
-                  {stats.pie_chart.map((entry, index) => (
+                <Pie data={stats.external_pie_chart} cx="50%" cy="50%" innerRadius={60} outerRadius={85} paddingAngle={5} dataKey="value">
+                  {stats.external_pie_chart.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -165,7 +208,7 @@ export default function BigDataPage() {
             </ResponsiveContainer>
           </div>
           <div className="mt-4 space-y-2">
-            {stats.pie_chart.map((d) => (
+            {stats.external_pie_chart.map((d) => (
               <div key={d.name} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full shrink-0" style={{ background: d.color }} />
@@ -175,19 +218,6 @@ export default function BigDataPage() {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="glass rounded-2xl p-6">
-          <h2 className="text-base font-semibold text-white mb-4">Sebaran Entitas Sistem</h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={stats.bar_chart} barSize={32}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-              <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: "#141417", border: "1px solid #27272a", borderRadius: 8 }} cursor={{ fill: '#27272a' }} />
-              <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
         </div>
       </div>
 
