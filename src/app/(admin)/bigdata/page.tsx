@@ -132,7 +132,7 @@ export default function BigDataPage() {
           </div>
 
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={stats.line_chart}>
+            <LineChart data={stats.line_chart || []}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
               <XAxis dataKey="time" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -147,7 +147,7 @@ export default function BigDataPage() {
         <div className="glass rounded-2xl p-6">
           <h2 className="text-base font-semibold text-white mb-4">Sebaran Data Internal</h2>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={stats.internal_bar_chart} barSize={32}>
+            <BarChart data={stats.internal_bar_chart || []} barSize={32}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
               <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -180,7 +180,7 @@ export default function BigDataPage() {
           </div>
 
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={stats.line_chart}>
+            <LineChart data={stats.line_chart || []}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
               <XAxis dataKey="time" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -198,8 +198,8 @@ export default function BigDataPage() {
           <div className="flex-1 min-h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={stats.external_pie_chart} cx="50%" cy="50%" innerRadius={60} outerRadius={85} paddingAngle={5} dataKey="value">
-                  {stats.external_pie_chart.map((entry, index) => (
+                <Pie data={stats.external_pie_chart || []} cx="50%" cy="50%" innerRadius={60} outerRadius={85} paddingAngle={5} dataKey="value">
+                  {(stats.external_pie_chart || []).map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -208,7 +208,7 @@ export default function BigDataPage() {
             </ResponsiveContainer>
           </div>
           <div className="mt-4 space-y-2">
-            {stats.external_pie_chart.map((d) => (
+            {(stats.external_pie_chart || []).map((d) => (
               <div key={d.name} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full shrink-0" style={{ background: d.color }} />
